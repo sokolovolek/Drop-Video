@@ -32,7 +32,7 @@
       "16": "/assets/icons/16.png",
       "48": "/assets/icons/48.png"
    },
-   "Me": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhUtKBIFDGVxbIQBvnCa37t5x+uq5FZS2qoQ89SWtM1iBM25omCoG5oQcbSeyBIq5UqhBLpa9KQV1cYVcc+JitQVi2ywHA1zonNCH9pU0Slc/jX/zy6LVv8AQLPeJ9bOyoZBtgXYR/jXwRZor5untTvJ7hlN0opvXYWoERp0w5c692IlvsDpClCfG/n5tuktfkpK1MT/pzJLjKniTk1K8SSS9xRqBfyUdo3D0Mn4hxLUXL/gaVpnYRUtJkS47bv40zsHiRbm/8dtShT8U0GGDuUyJU6/NGn4AH89Qz+u0JXzGNG/As3AmsQ5dE7wp4FHVpqB5g5Xv6GBWyOYqa7aPxwIDAQAB",
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhUtKBIFDGVxbIQBvnCa37t5x+uq5FZS2qoQ89SWtM1iBM25omCoG5oQcbSeyBIq5UqhBLpa9KQV1cYVcc+JitQVi2ywHA1zonNCH9pU0Slc/jX/zy6LVv8AQLPeJ9bOyoZBtgXYR/jXwRZor5untTvJ7hlN0opvXYWoERp0w5c692IlvsDpClCfG/n5tuktfkpK1MT/pzJLjKniTk1K8SSS9xRqBfyUdo3D0Mn4hxLUXL/gaVpnYRUtJkS47bv40zsHiRbm/8dtShT8U0GGDuUyJU6/NGn4AH89Qz+u0JXzGNG/As3AmsQ5dE7wp4FHVpqB5g5Xv6GBWyOYqa7aPxwIDAQAB",
    "manifest_version": 2,
    "name": "Drop Video - Aliexpress Video Downloader",
    "permissions": [ "activeTab", "storage", "http://*.aliexpress.com/*", "https://*.aliexpress.com/*", "https://www.youtube.com/*", "https://www.pinterest.com/*", "https://vimeo.com/*", "notifications" ],

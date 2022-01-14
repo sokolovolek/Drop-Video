@@ -1,5 +1,5 @@
 const Server_URL = 'http://138.197.70.250:3000';
-// const Server_URL = 'http://127.0.0.1:3000';
+//const Server_URL = 'http://localhost:3000';
 
 chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
     if (request.method == 'getSubscriptionStatus') {
@@ -16,46 +16,46 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
 
     if (request.action == 'get_vimeo_videos') {
         getVimeoVideos(request.search_query)
-            .then(response_videos => {
-                sendResponse({ videosFound: true, videos: response_videos });
-            })
-            .catch(error => {
-                sendResponse({ videosFound: false });
-            });
+        .then(response_videos => {
+            sendResponse({ videosFound: true, videos: response_videos });
+        })
+        .catch(error => {
+            sendResponse({ videosFound: false });
+        });
     } else if (request.action == 'get_youtube_videos') {
         getYoutubeVideos(request.search_query)
-            .then(response_videos => {
-                sendResponse({ videosFound: true, videos: response_videos });
-            })
-            .catch(error => {
-                sendResponse({ videosFound: false });
-            });
+        .then(response_videos => {
+            sendResponse({ videosFound: true, videos: response_videos });
+        })
+        .catch(error => {
+            sendResponse({ videosFound: false });
+        });
     } else if (request.action == 'get_pinterest_videos') {
         getPinterestVideos(request.search_query)
-            .then(response_videos => {
-                sendResponse({ videosFound: true, videos: response_videos });
-            })
-            .catch(error => {
-                sendResponse({ videosFound: false });
-            });
+        .then(response_videos => {
+            sendResponse({ videosFound: true, videos: response_videos });
+        })
+        .catch(error => {
+            sendResponse({ videosFound: false });
+        });
     } else if (request.action == 'get_facebook_videos') {
         getFacebookVideos(request.search_query)
-            .then(videos => {
-                console.log('get_facebook_videos:', videos);
-                sendResponse({ videosFound: true, videos: videos });
-            })
-            .catch(error => {
-                sendResponse({ videosFound: false });
-            });
+        .then(videos => {
+            console.log('get_facebook_videos:', videos);
+            sendResponse({ videosFound: true, videos: videos });
+        })
+        .catch(error => {
+            sendResponse({ videosFound: false });
+        });
     } else if (request.action == 'get_instagram_videos') {
         getInstagramVideos(request.search_query)
-            .then(videos => {
-                console.log('get_instagram_videos', videos);
-                sendResponse({ videosFound: true, videos: videos });
-            })
-            .catch(error => {
-                sendResponse({ videosFound: false });
-            });
+        .then(videos => {
+            console.log('get_instagram_videos', videos);
+            sendResponse({ videosFound: true, videos: videos });
+        })
+        .catch(error => {
+            sendResponse({ videosFound: false });
+        });
     } else if (request.action === 'download_video') {
         const url = request.url;
         const website = request.website;
@@ -84,73 +84,74 @@ function getPinterestVideos(title) {
         url += `&data={"options":{"article":null,"query":"${title}","rs":"filter","scope":"videos"}}`;
 
         fetch(url)
-            .then(response => response.json())
-            .then(json => {
-                let videos = json['resource_response']['data']['results'];
-                let response_videos = [];
+        .then(response => response.json())
+        .then(json => {
+            let videos = json['resource_response']['data']['results'];
+            let response_videos = [];
 
-                for (const video of videos) {
-                    let video_item = {};
-                    video_item['thumbnail'] = video['videos']['video_list']['V_HLSV3_WEB']['thumbnail'];
-                    video_item['title'] = video['title'];
-                    video_item['url'] = `https://www.pinterest.com/pin/${video['id']}`;
-                    response_videos.push(video_item);
-                }
-                if (response_videos.length > 0) {
-                    resolve(response_videos);
-                } else {
-                    reject('No videos');
-                }
-            })
-            .catch(error => {
+            for (const video of videos) {
+                let video_item = {};
+                video_item['thumbnail'] = video['videos']['video_list']['V_HLSV3_WEB']['thumbnail'];
+                video_item['title'] = video['title'];
+                video_item['url'] = `https://www.pinterest.com/pin/${video['id']}`;
+                response_videos.push(video_item);
+            }
+            if (response_videos.length > 0) {
+                resolve(response_videos);
+            } else {
                 reject('No videos');
-            });
+            }
+        })
+        .catch(error => {
+            reject('No videos');
+        });
     });
 }
 
 function getVimeoVideos(title) {
     return new Promise((resolve, reject) => {
         fetch(`https://api.vimeo.com/videos?query=${title}&per_page=100`, {
-                headers: {
-                    "Authorization": "bearer b99b8cbf68fc04cc4977b99ea95aeb93"
+            headers: {
+                "Authorization": "bearer b99b8cbf68fc04cc4977b99ea95aeb93"
+            }
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            let videos = data.data.map(item => {
+                return {
+                    thumbnail: item.pictures.sizes[3].link,
+                    title: item.name,
+                    url: item.link
                 }
             })
-            .then(resp => resp.json())
-            .then(data => {
-                let videos = data.data.map(item => {
-                    return {
-                        thumbnail: item.pictures.sizes[3].link,
-                        title: item.name,
-                        url: item.link
-                    }
-                })
-                console.log(videos)
-                resolve(videos)
-            })
+            console.log(videos)
+            resolve(videos)
+        })
     });
 }
 
 
 function getYoutubeVideos(title) {
     return new Promise((resolve, reject) => {
-        fetch(`https://.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&order=relevance&key=AIzaSyAPXzwqmi4NCPEqNzTXWopySitzEVIs1bM=${title}`)
-            .then(resp => resp.json())
-            .then(data => {
-                let videos = data.items.map(item => {
-                    return {
-                        thumbnail: item.snippet.thumbnails.medium.url,
-                        title: item.snippet.title,
-                        url: `https://www.youtube.com/watch?v=${item.id.videoId}`
-                    }
-                })
-
-                console.log(videos)
-                resolve(videos)
+        fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q=${title}&type=video&key=AIzaSyAPXzwqmi4NCPEqNzTXWopySitzEVIs1bM`)
+        .then(resp => resp.json())
+        .then(data => {
+            let videos = data.items.map(item => {
+                return {
+                    thumbnail: item.snippet.thumbnails.medium.url,
+                    title: item.snippet.title,
+                    url: `https://www.youtube.com/watch?v=${item.id.videoId}`
+                }
             })
+
+            console.log(videos)
+            resolve(videos)
+        })
     });
 }
 
 async function getFacebookVideos(query) {
+
     const response = await fetch(`${Server_URL}/video/get`, {
         method: 'POST',
         headers: {
@@ -225,66 +226,86 @@ async function getInstagramVideos(query) {
 
     const getPosts = async(query, maxId = null, isNewFormat) => {
 
-        // console.log(`before start`)
-        await delaySeconds(300);
+
+        try {
+         // console.log(`before start`)
+         await delaySeconds(300);
         // console.log(`start now..`);
         const url = maxId ?
-            (isNewFormat ? `https://www.instagram.com/explore/tags/${query}/?__a=1&max_id=${maxId}` :
-                `https://www.instagram.com/explore/tags/${query}/?__a=1&max_id=${maxId}`) :
-            `https://www.instagram.com/explore/tags/${query}/?__a=1`;
+        (isNewFormat ? `https://www.instagram.com/explore/tags/${query}/?__a=1&max_id=${maxId}` :
+            `https://www.instagram.com/explore/tags/${query}/?__a=1&max_id=${maxId}`) :
+        `https://www.instagram.com/explore/tags/${query}/?__a=1`;
 
         const data = await retryHttpRequestIfFailed(url);
-        const dataToReturn = data.graphql ? data.graphql.hashtag.edge_hashtag_to_media : data.data.recent;
-        return dataToReturn;
+        
+            const dataToReturn = data.graphql ? data.graphql.hashtag.edge_hashtag_to_media : data.data.recent;
+            return dataToReturn;
+    } catch (error) {
+           // console.log(`before start`)
+           query1 = query.split(' ')[0];
+        // console.log(`start now..`);
+        const url = maxId ?
+        (isNewFormat ? `https://www.instagram.com/explore/tags/${query1}/?__a=1&max_id=${maxId}` :
+            `https://www.instagram.com/explore/tags/${query1}/?__a=1&max_id=${maxId}`) :
+        `https://www.instagram.com/explore/tags/${query1}/?__a=1`;
+
+        const data = await retryHttpRequestIfFailed(url);
+        if (Object.keys(data).length != 0) {
+            const dataToReturn = data.graphql ? data.graphql.hashtag.edge_hashtag_to_media : data.data.recent;
+            return dataToReturn;
+        } 
     }
 
-    query = query.replace(' ', '').toLowerCase();
-    const videos = [];
-    let maxId = null;
-    let ifNewImp = false;
+    
+}
 
-    while (videos.length < 15) {
-        const posts = await getPosts(query, maxId, ifNewImp);
-        maxId = posts.page_info && posts.page_info.end_cursor;
+query = query.replace(' ', '').toLowerCase();
+const videos = [];
+let maxId = null;
+let ifNewImp = false;
 
-        if (maxId) {
+while (videos.length < 15) {
+    const posts = await getPosts(query, maxId, ifNewImp);
+    maxId = posts.page_info && posts.page_info.end_cursor;
 
-            if (!posts.page_info.has_next_page) {
-                break;
+    if (maxId) {
+
+        if (!posts.page_info.has_next_page) {
+            break;
+        }
+
+        for (const edge of posts.edges) {
+            const node = edge.node;
+            console.log(node.is_video);
+            if (!node.is_video) {
+                continue;
             }
 
-            for (const edge of posts.edges) {
-                const node = edge.node;
-                console.log(node.is_video);
-                if (!node.is_video) {
-                    continue;
-                }
+            const id = node.id;
+            const title = node.edge_media_to_caption.edges.length > 0 ? node.edge_media_to_caption.edges[0].node.text : '';
+            const thumbnail = node.thumbnail_src;
+            const url = `https://www.instagram.com/p/${node.shortcode}/`;
 
-                const id = node.id;
-                const title = node.edge_media_to_caption.edges.length > 0 ? node.edge_media_to_caption.edges[0].node.text : '';
-                const thumbnail = node.thumbnail_src;
-                const url = `https://www.instagram.com/p/${node.shortcode}/`;
+            videos.push({
+                id,
+                title: title.length > 170 ?
+                `${title.substr(0, 170)}...` : title,
+                thumbnail,
+                url,
+                dlLink: ""
+            });
+        }
+    } else {
+        ifNewImp = true;
+        maxId = posts.next_max_id;
+        if (!maxId) {
+            console.log(`not found max id from n`);
+            break;
+        }
 
-                videos.push({
-                    id,
-                    title: title.length > 170 ?
-                        `${title.substr(0, 170)}...` : title,
-                    thumbnail,
-                    url,
-                    dlLink: ""
-                });
-            }
-        } else {
-            ifNewImp = true;
-            maxId = posts.next_max_id;
-            if (!maxId) {
-                console.log(`not found max id from n`);
-                break;
-            }
+        for (const section of posts.sections) {
 
-            for (const section of posts.sections) {
-
-                for (const content of section.layout_content.medias) {
+            for (const content of section.layout_content.medias) {
 
                     //check if the content is video
                     if (content.media.media_type !== 2) {
@@ -299,7 +320,7 @@ async function getInstagramVideos(query) {
                     videos.push({
                         id,
                         title: title.length > 170 ?
-                            `${title.substr(0, 170)}...` : title,
+                        `${title.substr(0, 170)}...` : title,
                         thumbnail,
                         url,
                         dlLink: videoUrl
